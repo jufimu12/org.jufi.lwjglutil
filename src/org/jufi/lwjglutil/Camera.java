@@ -181,62 +181,53 @@ public class Camera {
 	public float getTx() {
 		return tx;
 	}
-	
 	public void setTx(float tx) {
 		this.tx = tx;
 	}
-	
 	public float getTy() {
 		return ty;
 	}
-	
 	public boolean setTy(float ty, boolean collision) {
 		if (collision && ppmap.collides(this.tx, ty, this.tz)) return true;
 		this.ty = ty;
 		return false;
 	}
-	
 	public float getTz() {
 		return tz;
 	}
-	
 	public void setTz(float tz) {
 		this.tz = tz;
 	}
-	
 	public float getRx() {
 		return rx;
 	}
-	
 	public void setRx(float rx) {
 		this.rx = rx;
 	}
-	
 	public float getRy() {
 		return ry;
 	}
-	
 	public void setRy(float ry) {
 		this.ry = ry;
 	}
-	
 	public float getRz() {
 		return rz;
 	}
-	
 	public void setRz(float rz) {
 		this.rz = rz;
 	}
-	
 	public float getFov() {
 		return fov;
 	}
-	
 	public void setFov(float fov) {
 		this.fov = fov;
 	}
-	
-	
+	public int getResX() {
+		return resxortho;
+	}
+	public int getResY() {
+		return resyortho;
+	}
 	
 	public static class CameraMode {
 		PhysMap ppmap;

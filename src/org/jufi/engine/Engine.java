@@ -3,7 +3,7 @@ package org.jufi.engine;
 import java.io.IOException;
 
 import org.jufi.lwjglutil.Camera.CameraMode;
-import org.jufi.lwjglutil.Model;
+import org.jufi.lwjglutil.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -50,6 +50,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	@Override
 	 protected CameraMode initCameraMode() {
@@ -57,11 +58,22 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		m.setDisplayRes(1600, 900);
 		m.setLightpos(1, 1, 1, 0);
 		m.setMap(null);
-		m.setOptions(true, false, false, true, true, true, false);
+		m.setOptions(true, false, false, true, true, false, true);
 		m.setOrthoRes(1600, 900);
 		m.setPerspective(70, 0.01f, 1000);
 		m.setTitle("Engine");
 		m.setTransformation(0, 0, 0, 0, 0, 0);
 		return m;
+	}
+	@Override
+	protected void move() {
+		float speed;
+		if (Keyboard.isKeyDown(KEY_LCONTROL)) speed = 0.02f;
+		else if (Keyboard.isKeyDown(KEY_LSHIFT)) speed = 0.5f;
+		else speed = 0.1f;
+		if (isKeyDown(KEY_W)) cam.moveNoClip(true, speed);
+		if (isKeyDown(KEY_S)) cam.moveNoClip(true, -speed);
+		if (isKeyDown(KEY_A)) cam.moveNoClip(false, speed);
+		if (isKeyDown(KEY_D)) cam.moveNoClip(false, -speed);
 	}
 }

@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.input.Keyboard.*;
 
 import java.io.IOException;
+
 import org.jufi.lwjglutil.Camera.CameraMode;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
@@ -21,6 +22,7 @@ public abstract class Engine extends Thread {
 	
 	// Non-Static stuff
 	protected Camera cam;
+	private FPSCounter fps = new FPSCounter();
 	
 	public Engine() {
 		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/natives");
@@ -32,6 +34,7 @@ public abstract class Engine extends Thread {
 		while (!Display.isCloseRequested()) {// Main loop
 			input();
 			tick();
+			fps.tick();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
 			glLoadIdentity();
@@ -45,6 +48,8 @@ public abstract class Engine extends Thread {
 			glLoadIdentity();
 				cam.init2d();
 				render2d();
+				glColor3f(0, 1, 0);
+				SimpleText.drawString(fps.getFPS(), 1, cam.getResY() - 10);
 				
 			Display.update();
 			Display.sync(60);
