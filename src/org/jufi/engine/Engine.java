@@ -1,8 +1,19 @@
 package org.jufi.engine;
 
+import java.io.IOException;
+
 import org.jufi.lwjglutil.Camera.CameraMode;
+import org.jufi.lwjglutil.Model;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import static org.lwjgl.input.Keyboard.*;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Engine extends org.jufi.lwjglutil.Engine {
+	private int dl_bunny;
+	private boolean keydown_escape;
+	
 	public static void main(String[] args) {
 		System.out.println("Starting test Engine application");
 		new Engine().start();
@@ -10,7 +21,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	
 	@Override
 	protected void render3d() {
-		
+		glCallList(dl_bunny);
 	}
 	@Override
 	protected void render3dNoLighting() {
@@ -22,7 +33,10 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	}
 	@Override
 	protected void tick() {
-		
+		if (Keyboard.isKeyDown(KEY_ESCAPE)) {
+			if (!keydown_escape) Mouse.setGrabbed(!Mouse.isGrabbed());
+			keydown_escape = true;
+		} else keydown_escape = false;
 	}
 
 	@Override
@@ -31,7 +45,11 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	}
 	@Override
 	protected void postInit() {
-		
+		try {
+			dl_bunny = Model.getCallListFromOBJ("res/obj/bunny.obj");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	@Override
 	 protected CameraMode initCameraMode() {

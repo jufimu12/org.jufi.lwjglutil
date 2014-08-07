@@ -263,4 +263,11 @@ public class Model implements Renderable {
 		glEndList();
 		return calllist;
 	}
+	public static int getCallListFromOBJ(String path) throws IOException {
+		int callist = glGenLists(1);
+		glNewList(callist, GL_COMPILE);
+		new Model(path).render();
+		glEndList();
+		return callist;
+	}
 }
