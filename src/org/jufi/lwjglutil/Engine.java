@@ -9,6 +9,7 @@ import org.jufi.lwjglutil.Camera.CameraMode;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.openal.AL;
+import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 
 public abstract class Engine extends Thread {
@@ -22,6 +23,7 @@ public abstract class Engine extends Thread {
 	
 	// Non-Static stuff
 	protected Camera cam;
+	protected int[] sh_main;// null to disable
 	private FPSCounter fps = new FPSCounter();
 	
 	public Engine() {
@@ -32,27 +34,52 @@ public abstract class Engine extends Thread {
 		initEverything();
 		
 		while (!Display.isCloseRequested()) {// Main loop
-			input();
-			tick();
-			fps.tick();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			glLoadIdentity();
-				cam.init3d();
-				cam.tick();
-				glEnable(GL_LIGHTING);
-				render3d();
-				glDisable(GL_LIGHTING);
-				render3dNoLighting();
+			if (sh_main == null) {
+				input();
+				tick();
+				fps.tick();
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
-			glLoadIdentity();
-				cam.init2d();
-				render2d();
-				glColor3f(0, 1, 0);
-				SimpleText.drawString(fps.getFPS(), 1, cam.getResY() - 10);
+				glLoadIdentity();
+					cam.init3d();
+					cam.tick();
+					glEnable(GL_LIGHTING);
+					render3d();
+					glDisable(GL_LIGHTING);
+					render3dNoLighting();
+					
+				glLoadIdentity();
+					cam.init2d();
+					render2d();
+					glColor3f(0, 1, 0);
+					SimpleText.drawString(fps.getFPS(), 1, cam.getResY() - 10);
+					
+				Display.update();
+				Display.sync(60);
+			} else {
+				input();
+				tick();
+				fps.tick();
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
-			Display.update();
-			Display.sync(60);
+				glLoadIdentity();
+					cam.init3d();
+					cam.tick();
+					ARBShaderObjects.glUseProgramObjectARB(sh_main[0]);
+					render3d();
+					ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
+					render3dNoLighting();
+					
+				glLoadIdentity();
+					cam.init2d();
+					ARBShaderObjects.glUseProgramObjectARB(sh_main[2]);
+					render2d();
+					glColor3f(0, 1, 0);
+					SimpleText.drawString(fps.getFPS(), 1, cam.getResY() - 10);
+					
+				Display.update();
+				Display.sync(60);
+			}
 		}
 		exit(0);
 	}

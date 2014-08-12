@@ -1,4 +1,4 @@
-package org.jufi.engine;
+package org.jufi.engine;// TODO SHADER
 
 import java.io.IOException;
 
@@ -25,11 +25,17 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	}
 	@Override
 	protected void render3dNoLighting() {
-		
+		glTranslatef(10, 0, 0);
+		glColor3f(0, 1, 1);
+		glCallList(dl_bunny);
 	}
 	@Override
 	protected void render2d() {
-		
+		glBegin(GL_TRIANGLES);
+		glColor3f(1, 0, 0);glVertex2f(100, 100);
+		glColor3f(0, 1, 0);glVertex2f(200, 100);
+		glColor3f(0, 0, 1);glVertex2f(100, 200);
+		glEnd();
 	}
 	@Override
 	protected void tick() {
@@ -47,10 +53,15 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	protected void postInit() {
 		try {
 			dl_bunny = Model.getCallListFromOBJ("res/obj/bunny.obj");
+			
+			sh_main = new int[3];
+			sh_main[0] = ResourceLoader.loadShader("res/shader/3d.vsh", "res/shader/3d.fsh")[0];
+			sh_main[1] = ResourceLoader.loadShader("res/shader/3dnl.vsh", "res/shader/3dnl.fsh")[0];
+			sh_main[2] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	@Override
 	 protected CameraMode initCameraMode() {
