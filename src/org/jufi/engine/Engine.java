@@ -30,14 +30,15 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	@Override
 	protected void render2d() {
 		glBegin(GL_TRIANGLES);
-		glColor3f(1, 0, 0);glVertex2f(100, 100);
-		glColor3f(0, 1, 0);glVertex2f(200, 100);
-		glColor3f(0, 0, 1);glVertex2f(100, 200);
+			glColor3f(1, 0, 0);glVertex2f(100, 100);
+			glColor3f(0, 1, 0);glVertex2f(200, 100);
+			glColor3f(0, 0, 1);glVertex2f(100, 200);
 		glEnd();
 	}
 	@Override
 	protected void tick() {
 		if (Keyboard.isKeyDown(KEY_ESCAPE)) {
+			if (Keyboard.isKeyDown(KEY_SPACE)) exit(0);
 			if (!keydown_escape) Mouse.setGrabbed(!Mouse.isGrabbed());
 			keydown_escape = true;
 		} else keydown_escape = false;
@@ -54,13 +55,13 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 			
 			sh_main = new int[3];
 			sh_main[0] = ResourceLoader.loadShader("res/shader/3d.vsh", "res/shader/3d.fsh")[0];
-			sh_main[1] = ResourceLoader.loadShader("res/shader/3dnl.vsh", "res/shader/3dnl.fsh")[0];
-			sh_main[2] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
+			sh_main[1] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
+			sh_main[2] = sh_main[1];
+//			sh_main = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		glClearColor(0, 1, 1, 1);
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	@Override
 	 protected CameraMode initCameraMode() {
@@ -68,11 +69,11 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		m.setDisplayRes(1600, 900);
 		m.setLightpos(1, 1, 1, 0);
 		m.setMap(null);
-		m.setOptions(false, false);
+		m.setOptions(false);
 		m.setOrthoRes(1600, 900);
 		m.setPerspective(70, 0.01f, 1000);
 		m.setTitle("Engine");
-		m.setTransformation(0, 0, 0, 0, 0, 0);
+		m.setTransformation(0, 3, 5, -20, 0, 0);
 		return m;
 	}
 	@Override

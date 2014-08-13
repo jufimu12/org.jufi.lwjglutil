@@ -8,7 +8,6 @@ import java.io.IOException;
 import org.jufi.lwjglutil.Camera.CameraMode;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 
@@ -16,8 +15,7 @@ public abstract class Engine extends Thread {
 	// Static stuff
 	
 	public static void exit(int exitArg) {
-		if (Display.isCreated()) Display.destroy();
-		if (AL.isCreated()) AL.destroy();
+		Camera.cleanup();
 		System.exit(exitArg);
 	}
 	
@@ -51,8 +49,7 @@ public abstract class Engine extends Thread {
 				glLoadIdentity();
 					cam.init2d();
 					render2d();
-					glColor3f(0, 1, 0);
-					SimpleText.drawString(fps.getFPS(), 1, cam.getResY() - 10);
+					fps.dispFPS(cam.getResY(), 3);
 					
 				Display.update();
 				Display.sync(60);
@@ -74,8 +71,7 @@ public abstract class Engine extends Thread {
 					cam.init2d();
 					ARBShaderObjects.glUseProgramObjectARB(sh_main[2]);
 					render2d();
-					glColor3f(0, 1, 0);
-					SimpleText.drawString(fps.getFPS(), 1, cam.getResY() - 10);
+					fps.dispFPS(cam.getResY(), 3);
 					
 				Display.update();
 				Display.sync(60);

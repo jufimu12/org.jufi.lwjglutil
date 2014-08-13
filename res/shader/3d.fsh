@@ -1,21 +1,17 @@
 varying vec4 diffuse,ambient;
 varying vec3 normal,halfVector;
+uniform sampler2D tex;
 
 void main()
 {
-	vec3 n,halfV,lightDir;
+	vec3 n,halfV;
 	float NdotL,NdotHV;
-
-	lightDir = vec3(gl_LightSource[0].position);
-
-	/* The ambient term will always be present */
 	vec4 color = ambient;
-	/* a fragment shader can't write a varying variable, hence we need
-	a new variable to store the normalized interpolated normal */
+	
 	n = normalize(normal);
-	/* compute the dot product between normal and ldir */
-
-	NdotL = max(dot(n,lightDir),0.0);
+	
+	// compute the dot product between normal and ldir
+	NdotL = max(dot(n,gl_LightSource[0].position),0.0);
 	
 	if (NdotL > 0.0) {
 		color += diffuse * NdotL;
@@ -25,7 +21,6 @@ void main()
 				gl_LightSource[0].specular *
 				pow(NdotHV, gl_FrontMaterial.shininess);
 	}
-
-	gl_FragColor = color;
-
+	
+	gl_FragColor = color * texture2D(tex, gl_TexCoord[0].st);
 }

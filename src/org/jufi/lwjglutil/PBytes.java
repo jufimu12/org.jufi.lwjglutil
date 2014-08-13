@@ -6,7 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
+
+import org.lwjgl.BufferUtils;
 
 public class PBytes {
 
@@ -152,5 +155,13 @@ public class PBytes {
 		ObjectOutputStream oostream = new ObjectOutputStream(fostream);
 		oostream.write(data);
 		oostream.close();
+	}
+	public static FloatBuffer toFloatBuffer(float ... data) {
+		FloatBuffer b = BufferUtils.createFloatBuffer(data.length);
+		for (float f : data) {
+			b.put(f);
+		}
+		b.flip();
+		return b;
 	}
 }

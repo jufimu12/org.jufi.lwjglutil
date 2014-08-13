@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
@@ -19,14 +17,14 @@ public class Camera {
 	private final String title;
 	private final float znear, zfar;
 	private final int resxdisplay, resydisplay, resxortho, resyortho;
-	private final boolean fullscreen, openal;
+	private final boolean fullscreen;
 	private FloatBuffer lightpos;
 	private float tx, ty, tz, rx, ry, rz;
 	private float fov;
 	
 	public Camera(PhysMap ppmap, FloatBuffer lightpos, String title,
 			float znear, float zfar, int resxdisplay, int resydisplay, int resxortho, int resyortho,
-			boolean fullscreen, boolean openal,
+			boolean fullscreen,
 			float tx, float ty, float tz, float rx, float ry, float rz, float fov) {
 		this.ppmap = ppmap;
 		this.lightpos = lightpos;
@@ -38,7 +36,6 @@ public class Camera {
 		this.resxortho = resxortho;
 		this.resyortho = resyortho;
 		this.fullscreen = fullscreen;
-		this.openal = openal;
 		this.tx = tx;
 		this.ty = ty;
 		this.tz = tz;
@@ -59,7 +56,6 @@ public class Camera {
 		resxortho = m.resxortho;
 		resyortho = m.resyortho;
 		fullscreen = m.fullscreen;
-		openal = m.openal;
 		tx = m.tx;
 		ty = m.ty;
 		tz = m.tz;
@@ -155,12 +151,10 @@ public class Camera {
 		Display.setIcon(icon);
 		
 		Display.create(new PixelFormat(8, 8, 0, 8));
-		if (openal) AL.create();
 	}
 	
 	public static void cleanup() {
 		if (Display.isCreated()) Display.destroy();
-		if (AL.isCreated()) AL.destroy();
 	}
 	
 	public float getTx() {
@@ -222,14 +216,13 @@ public class Camera {
 		float fov, znear, zfar;
 		int resxdisplay, resydisplay;
 		int resxortho, resyortho;
-		boolean fullscreen, openal;
+		boolean fullscreen;
 		
 		public void setMap(PhysMap ppmap) {
 			this.ppmap = ppmap;
 		}
 		public void setLightpos(float x, float y, float z, float w) {
-			lightpos = BufferUtils.createFloatBuffer(4);
-			lightpos.put(x).put(y).put(z).put(w).flip();
+			lightpos = PBytes.toFloatBuffer(x, y, z, w);
 		}
 		public void setTitle(String title) {
 			this.title = title;
@@ -247,9 +240,8 @@ public class Camera {
 			this.resxortho = x;
 			this.resyortho = y;
 		}
-		public void setOptions(boolean fullscreen, boolean openal) {
+		public void setOptions(boolean fullscreen) {
 			this.fullscreen = fullscreen;
-			this.openal = openal;
 		}
 		public void setTransformation(float tx, float ty, float tz, float rx, float ry, float rz) {
 			this.tx = tx;
