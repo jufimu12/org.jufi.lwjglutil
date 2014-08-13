@@ -19,14 +19,14 @@ public class Camera {
 	private final String title;
 	private final float znear, zfar;
 	private final int resxdisplay, resydisplay, resxortho, resyortho;
-	private final boolean customicon, fullscreen, desktopdisplaymode, vsync, antialising, openal, faceculling;
+	private final boolean fullscreen, openal;
 	private FloatBuffer lightpos;
 	private float tx, ty, tz, rx, ry, rz;
 	private float fov;
 	
 	public Camera(PhysMap ppmap, FloatBuffer lightpos, String title,
 			float znear, float zfar, int resxdisplay, int resydisplay, int resxortho, int resyortho,
-			boolean customicon, boolean fullscreen, boolean desktopdisplaymode, boolean vsync, boolean antialising, boolean openal, boolean faceculling,
+			boolean fullscreen, boolean openal,
 			float tx, float ty, float tz, float rx, float ry, float rz, float fov) {
 		this.ppmap = ppmap;
 		this.lightpos = lightpos;
@@ -37,13 +37,8 @@ public class Camera {
 		this.resydisplay = resydisplay;
 		this.resxortho = resxortho;
 		this.resyortho = resyortho;
-		this.customicon = customicon;
 		this.fullscreen = fullscreen;
-		this.desktopdisplaymode = desktopdisplaymode;
-		this.vsync = vsync;
-		this.antialising = antialising;
 		this.openal = openal;
-		this.faceculling = faceculling;
 		this.tx = tx;
 		this.ty = ty;
 		this.tz = tz;
@@ -63,13 +58,8 @@ public class Camera {
 		resydisplay = m.resydisplay;
 		resxortho = m.resxortho;
 		resyortho = m.resyortho;
-		customicon = m.customicon;
 		fullscreen = m.fullscreen;
-		desktopdisplaymode = m.desktopdisplaymode;
-		vsync = m.vsync;
-		antialising = m.antialising;
 		openal = m.openal;
-		faceculling = m.faceculling;
 		tx = m.tx;
 		ty = m.ty;
 		tz = m.tz;
@@ -132,10 +122,8 @@ public class Camera {
 		glMaterialf(GL_FRONT, GL_SHININESS, 64);
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_LIGHT0);
-		if (faceculling) {
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-		}
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
 		System.out.println("OpenGL version: " + glGetString(GL_VERSION));
 	}
 	
@@ -155,21 +143,18 @@ public class Camera {
 	}
 	
 	public void initDisplay() throws LWJGLException, IOException {
-		if (desktopdisplaymode) Display.setDisplayMode(Display.getDesktopDisplayMode());
+		if (fullscreen) Display.setDisplayMode(Display.getDesktopDisplayMode());
 		else Display.setDisplayMode(new DisplayMode(resxdisplay, resydisplay));
 		Display.setFullscreen(fullscreen);
 		Display.setTitle(title);
-		Display.setVSyncEnabled(vsync);
+		Display.setVSyncEnabled(true);
 		
-		if (customicon) {
-			ByteBuffer[] icon = new ByteBuffer[2];
-			icon[0] = ResourceLoader.loadTextureIntoByteBuffer(System.getProperty("user.dir") + "/res/img/icon16.png");
-			icon[1] = ResourceLoader.loadTextureIntoByteBuffer(System.getProperty("user.dir") + "/res/img/icon32.png");
-			Display.setIcon(icon);
-		}
+		ByteBuffer[] icon = new ByteBuffer[2];
+		icon[0] = ResourceLoader.loadTextureIntoByteBuffer(System.getProperty("user.dir") + "/res/img/icon16.png");
+		icon[1] = ResourceLoader.loadTextureIntoByteBuffer(System.getProperty("user.dir") + "/res/img/icon32.png");
+		Display.setIcon(icon);
 		
-		if (antialising) Display.create(new PixelFormat(8, 8, 0, 8));
-		else Display.create();
+		Display.create(new PixelFormat(8, 8, 0, 8));
 		if (openal) AL.create();
 	}
 	
@@ -237,7 +222,7 @@ public class Camera {
 		float fov, znear, zfar;
 		int resxdisplay, resydisplay;
 		int resxortho, resyortho;
-		boolean customicon, fullscreen, desktopdisplaymode, vsync, antialising, openal, faceculling;
+		boolean fullscreen, openal;
 		
 		public void setMap(PhysMap ppmap) {
 			this.ppmap = ppmap;
@@ -262,14 +247,9 @@ public class Camera {
 			this.resxortho = x;
 			this.resyortho = y;
 		}
-		public void setOptions(boolean customicon, boolean fullscreen, boolean desktopdisplaymode, boolean vsync, boolean antialising, boolean openal, boolean faceculling) {
-			this.customicon = customicon;
+		public void setOptions(boolean fullscreen, boolean openal) {
 			this.fullscreen = fullscreen;
-			this.desktopdisplaymode = desktopdisplaymode;
-			this.vsync = vsync;
-			this.antialising = antialising;
 			this.openal = openal;
-			this.faceculling = faceculling;
 		}
 		public void setTransformation(float tx, float ty, float tz, float rx, float ry, float rz) {
 			this.tx = tx;

@@ -1,8 +1,19 @@
-varying vec3 N;
-varying vec3 v;
-void main(void)
+varying vec4 diffuse,ambient;
+varying vec3 normal,halfVector;
+
+void main()
 {
-	v = vec3(gl_ModelViewMatrix * gl_Vertex);
-	N = normalize(gl_NormalMatrix * gl_Normal);
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+	/* first transform the normal into eye space and
+	normalize the result */
+	normal = normalize(gl_NormalMatrix * gl_Normal);
+
+	/* pass the halfVector to the fragment shader */
+	halfVector = gl_LightSource[0].halfVector.xyz;
+
+	/* Compute the diffuse, ambient and globalAmbient terms */
+	diffuse = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
+	ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
+	ambient += gl_LightModel.ambient * gl_FrontMaterial.ambient;
+	gl_Position = ftransform();
+
 }

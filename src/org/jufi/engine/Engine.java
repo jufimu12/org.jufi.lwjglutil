@@ -25,9 +25,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	}
 	@Override
 	protected void render3dNoLighting() {
-		glTranslatef(10, 0, 0);
-		glColor3f(0, 1, 1);
-		glCallList(dl_bunny);
+		
 	}
 	@Override
 	protected void render2d() {
@@ -61,6 +59,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		glClearColor(0, 1, 1, 1);
 //		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	@Override
@@ -69,7 +68,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		m.setDisplayRes(1600, 900);
 		m.setLightpos(1, 1, 1, 0);
 		m.setMap(null);
-		m.setOptions(true, false, false, true, true, false, true);
+		m.setOptions(false, false);
 		m.setOrthoRes(1600, 900);
 		m.setPerspective(70, 0.01f, 1000);
 		m.setTitle("Engine");
