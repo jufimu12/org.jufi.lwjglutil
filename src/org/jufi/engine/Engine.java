@@ -28,6 +28,14 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		
 	}
 	@Override
+	protected void render3dRelative() {
+		
+	}
+	@Override
+	protected void render3dRelativeNoLighting() {
+		
+	}
+	@Override
 	protected void render2d() {
 		glBindTexture(GL_TEXTURE_2D, 2);
 		glBegin(GL_TRIANGLES);
@@ -63,6 +71,8 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 			e.printStackTrace();
 		}
 		glClearColor(0, 1, 1, 1);
+		Mouse.setGrabbed(true);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	@Override
 	 protected CameraMode initCameraMode() {
@@ -70,7 +80,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		m.setDisplayRes(1600, 900);
 		m.setLightpos(1, 1, 1, 0);
 		m.setMap(null);
-		m.setOptions(false);
+		m.setOptions(false, 0);
 		m.setOrthoRes(1600, 900);
 		m.setPerspective(70, 0.01f, 1000);
 		m.setTitle("Engine");
@@ -87,5 +97,9 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		if (isKeyDown(KEY_S)) cam.moveNoClip(true, -speed);
 		if (isKeyDown(KEY_A)) cam.moveNoClip(false, speed);
 		if (isKeyDown(KEY_D)) cam.moveNoClip(false, -speed);
+	}
+	@Override
+	protected void onExit() {
+		
 	}
 }

@@ -22,6 +22,8 @@ public abstract class Engine extends Thread {
 	// Non-Static stuff
 	protected Camera cam;
 	protected int[] sh_main;// null to disable
+	protected boolean exitmainloop = false;
+	protected boolean printfps = true;
 	private FPSCounter fps = new FPSCounter();
 	private int timetogc = 1000;
 	
@@ -33,61 +35,64 @@ public abstract class Engine extends Thread {
 		initEverything();
 		
 		while (!Display.isCloseRequested()) {// Main loop
+			if (exitmainloop) return;
+			timetogc--;
+			if (timetogc <= 0) {
+				System.gc();
+				timetogc = 1000;
+			}
+			input();
+			tick();
+			fps.tick();
 			if (sh_main == null) {
-				input();
-				tick();
-				fps.tick();
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
 				glLoadIdentity();
+					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
 					cam.init3d();
-					cam.tick();
+					render3dRelativeNoLighting();
 					glEnable(GL_LIGHTING);
+					render3dRelative();
+					cam.tick();
 					render3d();
 					glDisable(GL_LIGHTING);
 					render3dNoLighting();
 					
 				glLoadIdentity();
+					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
 					cam.init2d();
 					render2d();
-					fps.dispFPS(cam.getResY(), 3);
+					if (printfps) fps.dispFPS(cam.getResY(), 3);
 					
 				Display.update();
 				Display.sync(60);
-				timetogc--;
-				if (timetogc <= 0) {
-					System.gc();
-					timetogc = 1000;
-				}
 			} else {
-				input();
-				tick();
-				fps.tick();
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
 				glLoadIdentity();
+					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
 					cam.init3d();
-					cam.tick();
+					ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
+					render3dRelativeNoLighting();
 					ARBShaderObjects.glUseProgramObjectARB(sh_main[0]);
+					render3dRelative();
+					cam.tick();
 					render3d();
 					ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
 					render3dNoLighting();
 					
 				glLoadIdentity();
+					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
 					cam.init2d();
 					ARBShaderObjects.glUseProgramObjectARB(sh_main[2]);
 					render2d();
-					fps.dispFPS(cam.getResY(), 3);
+					if (printfps) fps.dispFPS(cam.getResY(), 3);
 					
 				Display.update();
 				Display.sync(60);
-				timetogc--;
-				if (timetogc <= 0) {
-					System.gc();
-					timetogc = 1000;
-				}
 			}
 		}
+		onExit();
 		exit(0);
 	}
 	
@@ -119,12 +124,17 @@ public abstract class Engine extends Thread {
 		}
 		cam.init();
 		
-		Mouse.setGrabbed(true);
+		cam.init2d();
+		SimpleText.drawString("LOADING", (cam.getResX() - 56) / 2, (cam.getResY() - 10) / 2);
+		Display.update();
+		
 		ResourceLoader.initWhitePixelTexID();
 		postInit();
 		
 		System.gc();
 	}
+	protected abstract void render3dRelative();
+	protected abstract void render3dRelativeNoLighting();
 	protected abstract void render3d();
 	protected abstract void render3dNoLighting();
 	protected abstract void render2d();
@@ -132,4 +142,5 @@ public abstract class Engine extends Thread {
 	protected abstract void preInit();
 	protected abstract void postInit();
 	protected abstract CameraMode initCameraMode();
+	protected abstract void onExit();
 }
