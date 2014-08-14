@@ -23,6 +23,7 @@ public abstract class Engine extends Thread {
 	protected Camera cam;
 	protected int[] sh_main;// null to disable
 	private FPSCounter fps = new FPSCounter();
+	private int timetogc = 1000;
 	
 	public Engine() {
 		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/natives");
@@ -53,6 +54,11 @@ public abstract class Engine extends Thread {
 					
 				Display.update();
 				Display.sync(60);
+				timetogc--;
+				if (timetogc <= 0) {
+					System.gc();
+					timetogc = 1000;
+				}
 			} else {
 				input();
 				tick();
@@ -75,6 +81,11 @@ public abstract class Engine extends Thread {
 					
 				Display.update();
 				Display.sync(60);
+				timetogc--;
+				if (timetogc <= 0) {
+					System.gc();
+					timetogc = 1000;
+				}
 			}
 		}
 		exit(0);
@@ -109,6 +120,7 @@ public abstract class Engine extends Thread {
 		cam.init();
 		
 		Mouse.setGrabbed(true);
+		ResourceLoader.initWhitePixelTexID();
 		postInit();
 		
 		System.gc();

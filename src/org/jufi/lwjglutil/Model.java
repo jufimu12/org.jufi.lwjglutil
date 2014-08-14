@@ -342,7 +342,7 @@ public class Model implements Renderable {
 		public FloatBuffer ka = BufferUtils.createFloatBuffer(4);
 		public FloatBuffer kd = BufferUtils.createFloatBuffer(4);
 		public FloatBuffer ks = BufferUtils.createFloatBuffer(4);
-		public int texture = 0;
+		public int texture = ResourceLoader.whitePixelTexID;
 		
 		public Material(String name) {
 			this.name = name;

@@ -29,10 +29,11 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	}
 	@Override
 	protected void render2d() {
+		glBindTexture(GL_TEXTURE_2D, 2);
 		glBegin(GL_TRIANGLES);
-			glColor3f(1, 0, 0);glVertex2f(100, 100);
-			glColor3f(0, 1, 0);glVertex2f(200, 100);
-			glColor3f(0, 0, 1);glVertex2f(100, 200);
+			glColor3f(1, 0, 0);glTexCoord2d(0, 0);glVertex2f(100, 100);
+			glColor3f(0, 1, 0);glTexCoord2d(1, 0);glVertex2f(200, 100);
+			glColor3f(0, 0, 1);glTexCoord2d(0, 1);glVertex2f(100, 200);
 		glEnd();
 	}
 	@Override

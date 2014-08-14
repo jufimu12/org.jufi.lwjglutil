@@ -6,7 +6,6 @@ Ks 0.250000 0.250000 0.250000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd null.png
 
 newmtl grass
 Ns 92.156863

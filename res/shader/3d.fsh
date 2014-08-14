@@ -1,6 +1,6 @@
 varying vec4 diffuse,ambient;
 varying vec3 normal,halfVector;
-uniform sampler2D tex;
+uniform sampler2D tex0;
 
 void main()
 {
@@ -22,5 +22,5 @@ void main()
 				pow(NdotHV, gl_FrontMaterial.shininess);
 	}
 	
-	gl_FragColor = color * texture2D(tex, gl_TexCoord[0].st);
+	gl_FragColor = color * texture2D(tex0, gl_TexCoord[0].st);
 }
