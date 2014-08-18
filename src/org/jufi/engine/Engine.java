@@ -72,7 +72,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		}
 		glClearColor(0, 1, 1, 1);
 		Mouse.setGrabbed(true);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	@Override
 	 protected CameraMode initCameraMode() {
