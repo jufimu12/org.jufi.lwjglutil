@@ -35,6 +35,6 @@ public class FPSCounter {
 		glEnd();
 		
 		glColor3f(0, 1, 0);
-		SimpleText.drawString(fps, 0, -9);
+		Draw.drawString(fps, 0, -9);
     }
 }

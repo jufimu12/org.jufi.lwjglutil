@@ -66,7 +66,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 			sh_main[0] = ResourceLoader.loadShader("res/shader/3d.vsh", "res/shader/3d.fsh")[0];
 			sh_main[1] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
 			sh_main[2] = sh_main[1];
-//			sh_main = null;
+			sh_main = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
