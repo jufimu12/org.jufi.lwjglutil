@@ -125,7 +125,7 @@ public abstract class Engine extends Thread {
 		cam.init();
 		
 		cam.init2d();
-		Draw.drawString("LOADING", (cam.getResX() - 56) / 2, (cam.getResY() - 10) / 2);
+		Draw.drawString("LOADING", (cam.getResX() - 56) / 2, (cam.getResY() - 10) / 2, 1, 1, 1);
 		Display.update();
 		
 		ResourceLoader.initWhitePixelTexID();

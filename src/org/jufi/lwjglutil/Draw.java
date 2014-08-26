@@ -3,8 +3,8 @@ package org.jufi.lwjglutil;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Draw {
-	public static void drawString(String s, int x, int y){
-		int startX = x;
+	public static void drawString(String s, int x, int y, float r, float g, float b){
+		glColor3f(r, g, b);
 		glBegin(GL_POINTS);
 		for(char c : s.toLowerCase().toCharArray()){
 			if(c == 'a'){
@@ -488,9 +488,6 @@ public class Draw {
 				glVertex2f(x+1, y);
 				glVertex2f(x+1, y+1);
 				x+=2;
-			}else if(c == '\n'){
-				y-=10;
-				x = startX;
 			}else if(c == ' '){
 				x += 8;
 			}
@@ -498,12 +495,30 @@ public class Draw {
 		glEnd();
 	}
 	
-	public static void drawString(int s, int x, int y) {
-		drawString(String.valueOf(s), x, y);
+	public static void drawString(int s, int x, int y, float r, float g, float b) {
+		drawString(String.valueOf(s), x, y, r, g, b);
 	}
-	public static void drawString(float s, int x, int y) {
-		drawString(String.valueOf(s), x, y);
+	public static void drawString(float s, int x, int y, float r, float g, float b) {
+		drawString(String.valueOf(s), x, y, r, g, b);
 	}
+	
+	public static void drawStringBG(String s, int x, int y, float r, float g, float b) {
+		glColor3f(0, 0, 0);
+		glBegin(GL_QUADS);
+			glVertex2f(x, y + 10);
+			glVertex2f(x, y - 1);
+			glVertex2f(x + 8 * s.length(), y - 1);
+			glVertex2f(x + 8 * s.length(), y + 10);
+		glEnd();
+		drawString(s, x, y, r, g, b);
+	}
+	public static void drawStringBG(int s, int x, int y, float r, float g, float b) {
+		drawStringBG(String.valueOf(s), x, y, r, g, b);
+	}
+	public static void drawStringBG(float s, int x, int y, float r, float g, float b) {
+		drawStringBG(String.valueOf(s), x, y, r, g, b);
+	}
+	
 	public static void drawDisk(float r, int s) {
 		glBegin(GL_TRIANGLES);
 			for (int i = 0; i < 360; i += s) {
@@ -518,9 +533,9 @@ public class Draw {
 		for (int i = 0; i < 360; i += s) {
 			glTexCoord2f(0.5f, 0.5f);
 			glVertex2f(0, 0);
-			glTexCoord2f((float) MathLookup.sin(i + s) /2f + 0.5f, (float) MathLookup.cos(i + s) /2f + 0.5f);
+			glTexCoord2f((float) MathLookup.sin(i + s) /2f + 0.5f, (float) MathLookup.cos(i + s + 180) /2f + 0.5f);
 			glVertex2f((float) MathLookup.sin(i + s) * r, (float) MathLookup.cos(i + s) * r);
-			glTexCoord2f((float) MathLookup.sin(i) /2f + 0.5f, (float) MathLookup.cos(i) /2f + 0.5f);
+			glTexCoord2f((float) MathLookup.sin(i) /2f + 0.5f, (float) MathLookup.cos(i + 180) /2f + 0.5f);
 			glVertex2f((float) MathLookup.sin(i) * r, (float) MathLookup.cos(i) * r);
 		}
 		glEnd();
