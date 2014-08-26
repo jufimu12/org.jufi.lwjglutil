@@ -221,4 +221,36 @@ public class ResourceLoader {
 		}
 		return false;
 	}
+	
+	public static void loadNatives(String source, Class<?> executingClass) throws IOException {
+		String dest = System.getProperty("java.io.tmpdir") + "/lwjglnatives/";
+		String[] natives = new String[] {
+				"jinput-dx8_64.dll",
+				"jinput-dx8.dll",
+				"jinput-raw_64.dll",
+				"jinput-raw.dll",
+				"libjinput-linux.so",
+				"libjinput-linux64.so",
+				"libjinput-osx.jnilib",
+				"liblwjgl.jnilib",
+				"liblwjgl.so",
+				"liblwjgl64.so",
+				"libopenal.so",
+				"libopenal64.so",
+				"lwjgl.dll",
+				"lwjgl64.dll",
+				"openal.dylib",
+				"OpenAL32.dll",
+				"OpenAL64.dll"
+		};
+		
+		new File(System.getProperty("java.io.tmpdir") + "/lwjglnatives").mkdir();
+		for (String s : natives) {
+			FileUtils.copyJARRes(source + s, dest + s, executingClass);
+		}
+		System.setProperty("org.lwjgl.librarypath", System.getProperty("java.io.tmpdir") + "/lwjglnatives");
+	}
+	public static void loadNatives() throws IOException {
+		loadNatives("/org/jufi/lwjglutil/natives/", ResourceLoader.class);
+	}
 }

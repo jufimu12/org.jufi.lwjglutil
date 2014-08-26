@@ -5,11 +5,13 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class Files {
+public class FileUtils {
 	public static void extractZIP(File archive, File destDir) throws IOException {
 		if (!destDir.exists()) {
 			destDir.mkdir();
@@ -48,10 +50,32 @@ public class Files {
 		}
 				zipFile.close();
 	}
-	
 	private static File buildDirectoryHierarchyFor(String entryName, File destDir) {
 		int lastIndex = entryName.lastIndexOf('/');
 		String internalPathToEntry = entryName.substring(0, lastIndex + 1);
 		return new File(destDir, internalPathToEntry);
+	}
+	
+	public static void copyJARRes(String source, String target, Class<?> executingClass) throws IOException {
+		InputStream stream = executingClass.getResourceAsStream(source);
+		if (stream == null) {
+			throw new IOException("Could not create InputStream");
+		}
+		OutputStream resStreamOut;
+		int readBytes;
+		byte[] buffer = new byte[4096];
+		resStreamOut = new FileOutputStream(new File(target));
+		while ((readBytes = stream.read(buffer)) > 0) {
+			resStreamOut.write(buffer, 0, readBytes);
+		}
+		stream.close();
+		resStreamOut.close();
+	}
+	public static void copyJARRess(String srcdir, String dstdir, Class<?> executingClass, String ... names) throws IOException {
+		for (String s : names) {
+			System.out.println(srcdir + s);
+			System.out.println(dstdir + s);
+			copyJARRes(srcdir + s, dstdir + s, executingClass);
+		}
 	}
 }

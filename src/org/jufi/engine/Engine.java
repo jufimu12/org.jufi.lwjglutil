@@ -1,4 +1,4 @@
-package org.jufi.engine;// TODO SHADER
+package org.jufi.engine;
 
 import java.io.IOException;
 

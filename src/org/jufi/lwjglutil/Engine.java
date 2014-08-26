@@ -28,7 +28,7 @@ public abstract class Engine extends Thread {
 	private int timetogc = 1000;
 	
 	public Engine() {
-		System.setProperty("org.lwjgl.librarypath", System.getProperty("user.dir") + "/natives");
+		
 	}
 	
 	public final void run() {
@@ -110,6 +110,11 @@ public abstract class Engine extends Thread {
 		if (isKeyDown(KEY_D)) cam.moveNoClip(false, -0.1f);
 	}
 	private final void initEverything() {
+		try {
+			ResourceLoader.loadNatives("/org/jufi/lwjglutil/natives/", getClass());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		preInit();
 		
 		cam = new Camera(initCameraMode());
