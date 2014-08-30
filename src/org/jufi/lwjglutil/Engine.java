@@ -44,52 +44,58 @@ public abstract class Engine extends Thread {
 			input();
 			tick();
 			fps.tick();
-			if (sh_main == null) {
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				
-				glLoadIdentity();
-					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
-					cam.init3d();
-					render3dRelativeNoLighting();
-					glEnable(GL_LIGHTING);
-					render3dRelative();
-					cam.tick();
-					render3d();
-					glDisable(GL_LIGHTING);
-					render3dNoLighting();
-					
-				glLoadIdentity();
-					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
-					cam.init2d();
-					render2d();
-					if (printfps) fps.dispFPS(cam.getResY(), 3);
-					
-				Display.update();
-				Display.sync(60);
-			} else {
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				
-				glLoadIdentity();
-					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
-					cam.init3d();
-					ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
-					render3dRelativeNoLighting();
-					ARBShaderObjects.glUseProgramObjectARB(sh_main[0]);
-					render3dRelative();
-					cam.tick();
-					render3d();
-					ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
-					render3dNoLighting();
-					
-				glLoadIdentity();
-					glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
-					cam.init2d();
-					ARBShaderObjects.glUseProgramObjectARB(sh_main[2]);
-					render2d();
-					if (printfps) fps.dispFPS(cam.getResY(), 3);
-					
-				Display.update();
-				Display.sync(60);
+			try {
+				if (Display.isCurrent()) {
+					if (sh_main == null) {
+						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+						
+						glLoadIdentity();
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							cam.init3d();
+							render3dRelativeNoLighting();
+							glEnable(GL_LIGHTING);
+							render3dRelative();
+							cam.tick();
+							render3d();
+							glDisable(GL_LIGHTING);
+							render3dNoLighting();
+							
+						glLoadIdentity();
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							cam.init2d();
+							render2d();
+							if (printfps) fps.dispFPS(cam.getResY(), 3);
+							
+						Display.update();
+						Display.sync(60);
+					} else {
+						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+						
+						glLoadIdentity();
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							cam.init3d();
+							ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
+							render3dRelativeNoLighting();
+							ARBShaderObjects.glUseProgramObjectARB(sh_main[0]);
+							render3dRelative();
+							cam.tick();
+							render3d();
+							ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
+							render3dNoLighting();
+							
+						glLoadIdentity();
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							cam.init2d();
+							ARBShaderObjects.glUseProgramObjectARB(sh_main[2]);
+							render2d();
+							if (printfps) fps.dispFPS(cam.getResY(), 3);
+							
+						Display.update();
+						Display.sync(60);
+					}
+				}
+			} catch (LWJGLException e) {
+				e.printStackTrace();
 			}
 		}
 		onExit();
