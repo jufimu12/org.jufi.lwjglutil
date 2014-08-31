@@ -35,7 +35,10 @@ public abstract class Engine extends Thread {
 		initEverything();
 		
 		while (!Display.isCloseRequested()) {// Main loop
-			if (exitmainloop) return;
+			if (exitmainloop) {
+				Camera.cleanup();
+				return;
+			}
 			timetogc--;
 			if (timetogc <= 0) {
 				System.gc();
