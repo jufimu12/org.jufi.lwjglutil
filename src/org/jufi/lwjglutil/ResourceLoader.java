@@ -98,6 +98,8 @@ public class ResourceLoader {
 		whitePixelTexID = texId;
 	}
 	
+	
+	
 	public static int[] loadShader(String vertexShaderPath, String fragmentShaderPath) throws IOException {// Shader
 		int shaderProgram = glCreateProgram();
 		int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -130,7 +132,7 @@ public class ResourceLoader {
 		glLinkProgram(shaderProgram);
 		glValidateProgram(shaderProgram);
 		
-		return new int[]{shaderProgram, vertexShader, fragmentShader};
+		return new int[] {shaderProgram, vertexShader, fragmentShader};
 	}
 	
 	
@@ -147,6 +149,8 @@ public class ResourceLoader {
 		alDeleteBuffers(buffer);
 		return source;
 	}
+	
+	
 	
 	public static float[][] loadPhysMap(String path, boolean forPlayer) throws IOException {// Physics
 		BufferedReader res = new BufferedReader(new FileReader(path));
@@ -222,7 +226,9 @@ public class ResourceLoader {
 		return false;
 	}
 	
-	public static void loadNatives(String source, Class<?> executingClass) throws IOException {
+	
+	
+	public static void loadNatives(String source, Class<?> executingClass) throws IOException {// Natives
 		String dest = System.getProperty("java.io.tmpdir") + "/lwjglnatives/";
 		String[] natives = new String[] {
 				"jinput-dx8_64.dll",

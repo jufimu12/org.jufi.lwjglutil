@@ -1,6 +1,7 @@
 package org.jufi.lwjglutil;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.input.Keyboard.*;
 
 import java.io.IOException;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import org.jufi.lwjglutil.Camera.CameraMode;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 
 public abstract class Engine extends Thread {
@@ -77,19 +77,19 @@ public abstract class Engine extends Thread {
 						glLoadIdentity();
 							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
 							cam.init3d();
-							ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
+							glUseProgram(sh_main[1]);
 							render3dRelativeNoLighting();
-							ARBShaderObjects.glUseProgramObjectARB(sh_main[0]);
+							glUseProgram(sh_main[0]);
 							render3dRelative();
 							cam.tick();
 							render3d();
-							ARBShaderObjects.glUseProgramObjectARB(sh_main[1]);
+							glUseProgram(sh_main[1]);
 							render3dNoLighting();
 							
 						glLoadIdentity();
 							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
 							cam.init2d();
-							ARBShaderObjects.glUseProgramObjectARB(sh_main[2]);
+							glUseProgram(sh_main[2]);
 							render2d();
 							if (printfps) fps.dispFPS(cam.getResY(), 3);
 							
