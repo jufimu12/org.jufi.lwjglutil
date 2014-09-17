@@ -70,7 +70,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		glClearColor(0, 1, 1, 1);
+		glClearColor(0.6f, 0.6f, 1, 1);
 		Mouse.setGrabbed(true);
 //		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}

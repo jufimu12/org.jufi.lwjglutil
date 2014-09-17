@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.jufi.lwjglutil.Camera.CameraMode;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -34,7 +35,7 @@ public abstract class Engine extends Thread {
 	public final void run() {
 		initEverything();
 		
-		while (!Display.isCloseRequested()) {// Main loop
+		while (!Display.isCloseRequested() && !(Keyboard.isKeyDown(KEY_Q) && Keyboard.isKeyDown(KEY_LCONTROL))) {// Main loop
 			if (exitmainloop) {
 				Camera.cleanup();
 				return;

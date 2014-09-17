@@ -1,26 +1,26 @@
 varying vec4 diffuse,ambient;
 varying vec3 normal,halfVector;
+varying float depth;
 uniform sampler2D tex0;
 
 void main()
 {
-	vec3 n,halfV;
-	float NdotL,NdotHV;
+	vec3 n;
+	float NdotL;
 	vec4 color = ambient;
 	
 	n = normalize(normal);
 	
-	// compute the dot product between normal and ldir
-	NdotL = max(dot(n,gl_LightSource[0].position),0.0);
+	NdotL = max(dot(n,gl_LightSource[0].position.xyz),0.0);
 	
 	if (NdotL > 0.0) {
 		color += diffuse * NdotL;
-		halfV = normalize(halfVector);
-		NdotHV = max(dot(n,halfV),0.0);
 		color += gl_FrontMaterial.specular *
 				gl_LightSource[0].specular *
-				pow(NdotHV, gl_FrontMaterial.shininess);
+				pow(max(dot(n,normalize(halfVector)),0.0), gl_FrontMaterial.shininess);
 	}
 	
-	gl_FragColor = color * texture2D(tex0, gl_TexCoord[0].st);
+	color *= texture2D(tex0, gl_TexCoord[0].st);
+	
+	gl_FragColor = mix(vec4(0.8, 0.8, 0.8, 1.0), color, clamp(exp(-pow(0.03*depth, 2.0)), 0.0, 1.0));
 }
