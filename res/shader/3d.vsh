@@ -4,15 +4,12 @@ varying float depth;
 
 void main()
 {
-	normal = normalize(gl_NormalMatrix * gl_Normal);
-	
-	halfVector = gl_LightSource[0].halfVector.xyz;
-	
-	diffuse = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
-	ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
-	ambient += gl_LightModel.ambient * gl_FrontMaterial.ambient;
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 	
-	gl_TexCoord[0]  = gl_MultiTexCoord0;
+	normal = normalize(gl_NormalMatrix * gl_Normal);
+	halfVector = gl_LightSource[0].halfVector.xyz;
+	diffuse = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
+	ambient = gl_FrontMaterial.ambient * (gl_LightSource[0].ambient + gl_LightModel.ambient);
 	depth = gl_Position.z;
+	gl_TexCoord[0]  = gl_MultiTexCoord0;
 }
