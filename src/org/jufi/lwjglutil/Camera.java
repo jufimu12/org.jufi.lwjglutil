@@ -81,34 +81,48 @@ public class Camera {
 	}
 	
 	public void moveY(boolean zdir, float amount) {
-		float otz = tz;
-		float oty = ty;
 		float otx = tx;
+		float oty = ty;
+		float otz = tz;
 		if (zdir) {
-			tx -= amount * MathLookup.cos(90 - ry) * MathLookup.cos(rx);
+			tx -= amount * MathLookup.sin(ry) * MathLookup.cos(rx);
 			ty += amount * MathLookup.sin(rx);
-			tz -= amount * MathLookup.sin(90 - ry) * MathLookup.cos(rx);
+			tz -= amount * MathLookup.cos(ry) * MathLookup.cos(rx);
 		} else {
 			tx -= amount * MathLookup.cos(-ry);
-			tz -= amount * MathLookup.sin(-ry);
+			tz += amount * MathLookup.sin(ry);
 		}
 		if (physics && ppmap.collides(tx, ty, tz) && !ppmap.collides(otx, oty, otz)) {
 			tx = otx;
+			ty = oty;
 			tz = otz;
 		}
 	}
 	public void moveNoY(boolean zdir, float amount) {
-		float otz = tz;
 		float otx = tx;
+		float otz = tz;
 		if (zdir) {
-			tz -= amount * MathLookup.sin(-ry + 90);
-			tx -= amount * MathLookup.cos(-ry + 90);
+			tx -= amount * MathLookup.sin(ry);
+			tz -= amount * MathLookup.cos(ry);
 		} else {
-			tz -= amount * MathLookup.sin(-ry);
 			tx -= amount * MathLookup.cos(-ry);
+			tz += amount * MathLookup.sin(ry);
 		}
 		if (physics && ppmap.collides(tx, ty, tz) && !ppmap.collides(otx, ty, otz)) {
 			tx = otx;
+			tz = otz;
+		}
+	}
+	public void moveInDir(float rx, float ry, float amount) {
+		float otx = tx;
+		float oty = ty;
+		float otz = tz;
+		tx -= amount * MathLookup.sin(ry) * MathLookup.cos(rx);
+		ty += amount * MathLookup.sin(rx);
+		tz -= amount * MathLookup.cos(ry) * MathLookup.cos(rx);
+		if (physics && ppmap.collides(tx, ty, tz) && !ppmap.collides(otx, oty, otz)) {
+			tx = otx;
+			ty = oty;
 			tz = otz;
 		}
 	}
@@ -169,7 +183,7 @@ public class Camera {
 		icon[1] = ResourceLoader.loadTextureIntoByteBuffer(System.getProperty("user.dir") + "/res/img/icon32.png");
 		Display.setIcon(icon);
 		
-		Display.create(new PixelFormat(8, 8, 0, 8));
+		Display.create(new PixelFormat(8, 24, 0, 16));
 	}
 	
 	public void cleanup() {
