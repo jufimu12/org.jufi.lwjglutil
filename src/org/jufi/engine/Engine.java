@@ -75,8 +75,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 //		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	@Override
-	 protected CameraMode initCameraMode() {
-		CameraMode m = new CameraMode();
+	 protected void initCameraMode(CameraMode m) {
 		m.setDisplayRes(1600, 900);
 		m.setLightpos(1, 1, 1, 0);
 		m.setMap(null);
@@ -85,7 +84,6 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		m.setPerspective(70, 0.01f, 1000);
 		m.setTitle("Engine");
 		m.setTransformation(0, 3, 5, -20, 0, 0);
-		return m;
 	}
 	@Override
 	protected void move() {

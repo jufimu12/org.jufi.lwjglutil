@@ -120,7 +120,9 @@ public abstract class Engine extends Thread {
 		}
 		preInit();
 		
-		cam = new Camera(initCameraMode());
+		CameraMode cammode = new CameraMode();
+		initCameraMode(cammode);
+		cam = new Camera(cammode);
 		try {
 			cam.initDisplay();
 		} catch (LWJGLException e) {
@@ -155,6 +157,6 @@ public abstract class Engine extends Thread {
 	protected abstract void tick();
 	protected abstract void preInit();
 	protected abstract void postInit();
-	protected abstract CameraMode initCameraMode();
+	protected abstract void initCameraMode(CameraMode m);
 	protected abstract void onExit();
 }
