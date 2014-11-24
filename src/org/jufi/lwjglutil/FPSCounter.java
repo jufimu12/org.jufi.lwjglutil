@@ -20,7 +20,7 @@ public class FPSCounter {
         return fps;
     }
     public void dispFPS(int resYOrtho, float size) {
-    	glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+    	glBindTexture(GL_TEXTURE_2D, ResourceLoader.white);
     	
     	glTranslatef(0, resYOrtho, 0);
     	glScalef(size, size, 1);

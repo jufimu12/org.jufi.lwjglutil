@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
@@ -156,8 +157,9 @@ public class Camera {
 		Display.create(new PixelFormat(8, 8, 0, 8));
 	}
 	
-	public static void cleanup() {
+	public void cleanup() {
 		if (Display.isCreated()) Display.destroy();
+		if (AL.isCreated()) AL.destroy();
 	}
 	
 	public float getTx() {

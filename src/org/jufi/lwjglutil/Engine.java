@@ -13,14 +13,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 public abstract class Engine extends Thread {
-	// Static stuff
 	
-	public static void exit(int exitArg) {
-		Camera.cleanup();
-		System.exit(exitArg);
-	}
-	
-	// Non-Static stuff
 	protected Camera cam;
 	protected int[] sh_main;// null to disable
 	protected boolean exitmainloop = false;
@@ -37,8 +30,8 @@ public abstract class Engine extends Thread {
 		
 		while (!Display.isCloseRequested() && !(Keyboard.isKeyDown(KEY_Q) && Keyboard.isKeyDown(KEY_LCONTROL))) {// Main loop
 			if (exitmainloop) {
-				Camera.cleanup();
-				return;
+				cam.cleanup();
+				break;
 			}
 			timetogc--;
 			if (timetogc <= 0) {
@@ -54,7 +47,7 @@ public abstract class Engine extends Thread {
 						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 						
 						glLoadIdentity();
-							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.white);
 							cam.init3d();
 							render3dRelativeNoLighting();
 							glEnable(GL_LIGHTING);
@@ -65,7 +58,7 @@ public abstract class Engine extends Thread {
 							render3dNoLighting();
 							
 						glLoadIdentity();
-							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.white);
 							cam.init2d();
 							render2d();
 							if (printfps) fps.dispFPS(cam.getResY(), 3);
@@ -76,7 +69,7 @@ public abstract class Engine extends Thread {
 						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 						
 						glLoadIdentity();
-							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.white);
 							cam.init3d();
 							glUseProgram(sh_main[1]);
 							render3dRelativeNoLighting();
@@ -88,7 +81,7 @@ public abstract class Engine extends Thread {
 							render3dNoLighting();
 							
 						glLoadIdentity();
-							glBindTexture(GL_TEXTURE_2D, ResourceLoader.whitePixelTexID);
+							glBindTexture(GL_TEXTURE_2D, ResourceLoader.white);
 							cam.init2d();
 							glUseProgram(sh_main[2]);
 							render2d();
@@ -143,11 +136,17 @@ public abstract class Engine extends Thread {
 		Draw.drawString("LOADING", (cam.getResX() - 56) / 2, (cam.getResY() - 10) / 2, 1, 1, 1);
 		Display.update();
 		
-		ResourceLoader.initWhitePixelTexID();
+		ResourceLoader.initWhite();
 		postInit();
 		
 		System.gc();
 	}
+	
+	public void exit(int exitArg) {
+		cam.cleanup();
+		System.exit(exitArg);
+	}
+	
 	protected abstract void render3dRelative();
 	protected abstract void render3dRelativeNoLighting();
 	protected abstract void render3d();

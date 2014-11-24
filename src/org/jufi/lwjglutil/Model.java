@@ -1,4 +1,4 @@
-package org.jufi.lwjglutil;
+package org.jufi.lwjglutil;// BINARY I/O FEATURE PROBABLY WONT WORK
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -355,7 +355,7 @@ public class Model implements Renderable {
 		private FloatBuffer kd = BufferUtils.createFloatBuffer(4);
 		private FloatBuffer ks = BufferUtils.createFloatBuffer(4);
 		private float ns = 64;
-		private int texture = ResourceLoader.whitePixelTexID;
+		private int texture = ResourceLoader.white;
 
 		public Material(String name) {
 			this.name = name;
