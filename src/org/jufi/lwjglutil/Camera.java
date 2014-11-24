@@ -80,11 +80,11 @@ public class Camera {
 		glLight(GL_LIGHT0, GL_POSITION, lightpos);
 	}
 	
-	public void moveY(boolean dir, float amount) {
+	public void moveY(boolean zdir, float amount) {
 		float otz = tz;
 		float oty = ty;
 		float otx = tx;
-		if (dir) {
+		if (zdir) {
 			tx -= amount * MathLookup.cos(90 - ry) * MathLookup.cos(rx);
 			ty += amount * MathLookup.sin(rx);
 			tz -= amount * MathLookup.sin(90 - ry) * MathLookup.cos(rx);
@@ -97,11 +97,16 @@ public class Camera {
 			tz = otz;
 		}
 	}
-	public void moveNoY(float dir, float amount) {
+	public void moveNoY(boolean zdir, float amount) {
 		float otz = tz;
 		float otx = tx;
-		tz -= amount * MathLookup.sin(-ry + 90 * dir);
-		tx -= amount * MathLookup.cos(-ry + 90 * dir);
+		if (zdir) {
+			tz -= amount * MathLookup.sin(-ry + 90);
+			tx -= amount * MathLookup.cos(-ry + 90);
+		} else {
+			tz -= amount * MathLookup.sin(-ry);
+			tx -= amount * MathLookup.cos(-ry);
+		}
 		if (physics && ppmap.collides(tx, ty, tz) && !ppmap.collides(otx, ty, otz)) {
 			tx = otx;
 			tz = otz;
