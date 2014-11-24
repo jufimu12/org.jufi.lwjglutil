@@ -186,8 +186,8 @@ public class Camera {
 	public float getTy() {
 		return ty;
 	}
-	public boolean setTy(float ty, boolean collision) {
-		if (collision && ppmap.collides(this.tx, ty, this.tz)) return true;
+	public boolean setTy(float ty) {
+		if (physics && ppmap.collides(this.tx, ty, this.tz)) return true;
 		this.ty = ty;
 		return false;
 	}
