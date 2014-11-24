@@ -107,10 +107,10 @@ public abstract class Engine extends Thread {
 		move();
 	}
 	protected void move() {
-		if (isKeyDown(KEY_W)) cam.moveNoClip(true, 0.1f);
-		if (isKeyDown(KEY_S)) cam.moveNoClip(true, -0.1f);
-		if (isKeyDown(KEY_A)) cam.moveNoClip(false, 0.1f);
-		if (isKeyDown(KEY_D)) cam.moveNoClip(false, -0.1f);
+		if (isKeyDown(KEY_W)) cam.moveY(true, 0.1f);
+		if (isKeyDown(KEY_S)) cam.moveY(true, -0.1f);
+		if (isKeyDown(KEY_A)) cam.moveY(false, 0.1f);
+		if (isKeyDown(KEY_D)) cam.moveY(false, -0.1f);
 	}
 	private final void initEverything() {
 		try {

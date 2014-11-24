@@ -23,10 +23,11 @@ public class Camera {
 	private FloatBuffer lightpos;
 	private float tx, ty, tz, rx, ry, rz;
 	private float fov;
+	private boolean physics;
 	
 	public Camera(PhysMap ppmap, FloatBuffer lightpos, String title,
 			float znear, float zfar, int resxdisplay, int resydisplay, int resxortho, int resyortho,
-			boolean fullscreen, float playerHeight,
+			boolean fullscreen, float playerHeight, boolean physics,
 			float tx, float ty, float tz, float rx, float ry, float rz, float fov) {
 		this.ppmap = ppmap;
 		this.lightpos = lightpos;
@@ -39,6 +40,7 @@ public class Camera {
 		this.resyortho = resyortho;
 		this.fullscreen = fullscreen;
 		this.playerHeight = playerHeight;
+		this.physics = physics;
 		this.tx = tx;
 		this.ty = ty;
 		this.tz = tz;
@@ -67,6 +69,7 @@ public class Camera {
 		ry = m.ry;
 		rz = m.rz;
 		fov = m.fov;
+		physics = m.physics;
 	}
 	
 	public void tick() {
@@ -77,7 +80,10 @@ public class Camera {
 		glLight(GL_LIGHT0, GL_POSITION, lightpos);
 	}
 	
-	public void moveNoClip(boolean dir, float amount) {
+	public void moveY(boolean dir, float amount) {
+		float otz = tz;
+		float oty = ty;
+		float otx = tx;
 		if (dir) {
 			tx -= amount * MathLookup.cos(90 - ry) * MathLookup.cos(rx);
 			ty += amount * MathLookup.sin(rx);
@@ -86,13 +92,17 @@ public class Camera {
 			tx -= amount * MathLookup.cos(-ry);
 			tz -= amount * MathLookup.sin(-ry);
 		}
+		if (physics && ppmap.collides(tx, ty, tz) && !ppmap.collides(otx, oty, otz)) {
+			tx = otx;
+			tz = otz;
+		}
 	}
 	public void moveNoY(float dir, float amount) {
 		float otz = tz;
 		float otx = tx;
 		tz -= amount * MathLookup.sin(-ry + 90 * dir);
 		tx -= amount * MathLookup.cos(-ry + 90 * dir);
-		if (ppmap.collides(tx, ty, tz) && !ppmap.collides(otx, ty, otz)) {
+		if (physics && ppmap.collides(tx, ty, tz) && !ppmap.collides(otx, ty, otz)) {
 			tx = otx;
 			tz = otz;
 		}
@@ -214,14 +224,14 @@ public class Camera {
 	}
 	
 	public static class CameraMode {
-		PhysMap ppmap;
-		FloatBuffer lightpos;
-		String title;
-		float tx, ty, tz, rx, ry, rz;
-		float fov, znear, zfar, playerHeight;
-		int resxdisplay, resydisplay;
-		int resxortho, resyortho;
-		boolean fullscreen;
+		private PhysMap ppmap;
+		private FloatBuffer lightpos;
+		private String title;
+		private float tx, ty, tz, rx, ry, rz;
+		private float fov, znear, zfar, playerHeight;
+		private int resxdisplay, resydisplay;
+		private int resxortho, resyortho;
+		private boolean fullscreen, physics;
 		
 		public void setMap(PhysMap ppmap) {
 			this.ppmap = ppmap;
@@ -245,9 +255,10 @@ public class Camera {
 			this.resxortho = x;
 			this.resyortho = y;
 		}
-		public void setOptions(boolean fullscreen, float playerHeight) {
+		public void setOptions(boolean fullscreen, float playerHeight, boolean physics) {
 			this.fullscreen = fullscreen;
 			this.playerHeight = playerHeight;
+			this.physics = physics;
 		}
 		public void setTransformation(float tx, float ty, float tz, float rx, float ry, float rz) {
 			this.tx = tx;

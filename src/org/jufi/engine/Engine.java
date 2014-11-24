@@ -79,7 +79,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		m.setDisplayRes(1600, 900);
 		m.setLightpos(1, 1, 1, 0);
 		m.setMap(null);
-		m.setOptions(false, 0);
+		m.setOptions(false, 0, false);
 		m.setOrthoRes(1600, 900);
 		m.setPerspective(70, 0.01f, 1000);
 		m.setTitle("Engine");
@@ -91,10 +91,10 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 		if (Keyboard.isKeyDown(KEY_LCONTROL)) speed = 0.02f;
 		else if (Keyboard.isKeyDown(KEY_LSHIFT)) speed = 0.5f;
 		else speed = 0.1f;
-		if (isKeyDown(KEY_W)) cam.moveNoClip(true, speed);
-		if (isKeyDown(KEY_S)) cam.moveNoClip(true, -speed);
-		if (isKeyDown(KEY_A)) cam.moveNoClip(false, speed);
-		if (isKeyDown(KEY_D)) cam.moveNoClip(false, -speed);
+		if (isKeyDown(KEY_W)) cam.moveY(true, speed);
+		if (isKeyDown(KEY_S)) cam.moveY(true, -speed);
+		if (isKeyDown(KEY_A)) cam.moveY(false, speed);
+		if (isKeyDown(KEY_D)) cam.moveY(false, -speed);
 	}
 	@Override
 	protected void onExit() {
