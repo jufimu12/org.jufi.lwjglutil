@@ -66,7 +66,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 			sh_main[2] = sh_main[1];
 //			sh_main = null;
 
-			dl_bunny = Model.getCallListFromOBJ("res/obj/bunny.obj");
+			dl_bunny = Model.getDL("res/obj/bunny.obj");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
