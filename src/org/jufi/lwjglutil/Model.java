@@ -13,25 +13,98 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public class Model implements Renderable {
-	private ArrayList<float[]> vertices = new ArrayList<float[]>();
-	private ArrayList<float[]> vtextures = new ArrayList<float[]>();
-	private ArrayList<float[]> normals = new ArrayList<float[]>();
-	private ArrayList<ModelCommand> commands = new ArrayList<ModelCommand>();
+	private ModelCommand[] commands;
 	private ArrayList<Material> materials = new ArrayList<Material>();
 
 	public Model(String path) throws IOException {
-		BufferedReader res = new BufferedReader(new FileReader(path));
 		String line;
 
-		float[] firstValue = { 0, 0, 0 };
-		float[] vfirstValue = { 0, 0 };
-		vertices.add(firstValue);
-		vtextures.add(vfirstValue);
-		normals.add(firstValue);
+		ArrayList<ModelCommand> cmds = new ArrayList<ModelCommand>();
+		ArrayList<float[]> vertices = new ArrayList<float[]>();// TODO material direct, optimize dl
+		ArrayList<float[]> vtextures = new ArrayList<float[]>();
+		ArrayList<float[]> normals = new ArrayList<float[]>();
+
+		vertices.add(new float[] {0, 0, 0});
+		vtextures.add(new float[] {0, 0});
+		normals.add(new float[] {0, 0, 0});
+		
+		BufferedReader res = new BufferedReader(new FileReader(path));
+		
 		while ((line = res.readLine()) != null) {
-			readln(line, path);
+			if (!line.isEmpty() && !line.startsWith("#")) {
+				String[] args = line.split(" ");
+	
+				if (args[0].equals("v") && args.length == 4) {
+					float[] value = {Float.valueOf(args[1]), Float.valueOf(args[2]),
+							Float.valueOf(args[3])};
+					vertices.add(value);
+				}
+				if (args[0].equals("vn") && args.length == 4) {
+					float[] value = {Float.valueOf(args[1]), Float.valueOf(args[2]),
+							Float.valueOf(args[3])};
+					normals.add(value);
+				}
+				if (args[0].equals("vt") && args.length == 3) {
+					float[] value = {Float.valueOf(args[1]), Float.valueOf(args[2])};
+					vtextures.add(value);
+				}
+				if (args[0].equals("f") && args.length == 4) {
+					float[] v = new float[9];
+					float[] vt = new float[6];
+					float[] vn = new float[9];
+					boolean[] tex = new boolean[3];
+					for (int i = 0; i < 3; i++) {
+						if (args[i + 1].contains("/")) {
+							if (args[i + 1].contains("//")) {
+								String[] splitted = args[i + 1].split("//");
+								v[i * 3] = vertices.get(Integer.valueOf(splitted[0]))[0];
+								v[i * 3 + 1] = vertices.get(Integer.valueOf(splitted[0]))[1];
+								v[i * 3 + 2] = vertices.get(Integer.valueOf(splitted[0]))[2];
+								vn[i * 3] = normals.get(Integer.valueOf(splitted[1]))[0];
+								vn[i * 3 + 1] = normals.get(Integer.valueOf(splitted[1]))[1];
+								vn[i * 3 + 2] = normals.get(Integer.valueOf(splitted[1]))[2];
+							} else {
+								tex[i] = true;
+								String[] splitted = args[i + 1].split("/");
+								v[i * 3] = vertices.get(Integer.valueOf(splitted[0]))[0];
+								v[i * 3 + 1] = vertices.get(Integer.valueOf(splitted[0]))[1];
+								v[i * 3 + 2] = vertices.get(Integer.valueOf(splitted[0]))[2];
+								vt[i * 2] = vtextures.get(Integer.valueOf(splitted[1]))[0];
+								vt[i * 2 + 1] = vtextures.get(Integer.valueOf(splitted[1]))[1];
+								if (splitted.length == 3) {
+									vn[i * 3] = normals.get(Integer.valueOf(splitted[2]))[0];
+									vn[i * 3 + 1] = normals.get(Integer.valueOf(splitted[2]))[1];
+									vn[i * 3 + 2] = normals.get(Integer.valueOf(splitted[2]))[2];
+								}
+							}
+						} else {
+							v[i * 3] = vertices.get(Integer.valueOf(args[i + 1]))[0];
+							v[i * 3 + 1] = vertices.get(Integer.valueOf(args[i + 1]))[1];
+							v[i * 3 + 2] = vertices.get(Integer.valueOf(args[i + 1]))[2];
+						}
+					}
+					cmds.add(new Face(v, vt, vn, tex));
+				}
+				if (args[0].equals("mtllib") && args.length == 2) {
+					Material.readFile(materials, new File(path).toPath().getParent()
+							.toString()
+							+ "/" + args[1]);
+	
+				}
+				if (args[0].equals("usemtl") && args.length == 2) {
+					for (Material mat : materials) {
+						if (mat.name.equals(args[1]))
+							cmds.add(mat);
+					}
+				}
+			}
 		}
 		res.close();
+		
+		commands = new ModelCommand[cmds.size()];
+		for (int i = 0; i < cmds.size(); i++) {
+			commands[i] = cmds.get(i);
+		}
 	}
 
 	public void render() {
@@ -40,104 +113,6 @@ public class Model implements Renderable {
 			command.execute(this);
 		}
 		glEnd();
-	}
-
-	public void renderFace(Face face) {
-		if (face.normals[0] != 0)
-			glNormal3f(normals.get(face.normals[0])[0],
-					normals.get(face.normals[0])[1],
-					normals.get(face.normals[0])[2]);
-		if (face.textures[0] != 0)
-			glTexCoord2f(vtextures.get(face.textures[0])[0],
-					vtextures.get(face.textures[0])[1]);
-		glVertex3f(vertices.get(face.vertices[0])[0],
-				vertices.get(face.vertices[0])[1],
-				vertices.get(face.vertices[0])[2]);
-
-		if (face.normals[1] != 0)
-			glNormal3f(normals.get(face.normals[1])[0],
-					normals.get(face.normals[1])[1],
-					normals.get(face.normals[1])[2]);
-		if (face.textures[1] != 0)
-			glTexCoord2f(vtextures.get(face.textures[1])[0],
-					vtextures.get(face.textures[1])[1]);
-		glVertex3f(vertices.get(face.vertices[1])[0],
-				vertices.get(face.vertices[1])[1],
-				vertices.get(face.vertices[1])[2]);
-
-		if (face.normals[2] != 0)
-			glNormal3f(normals.get(face.normals[2])[0],
-					normals.get(face.normals[2])[1],
-					normals.get(face.normals[2])[2]);
-		if (face.textures[2] != 0)
-			glTexCoord2f(vtextures.get(face.textures[2])[0],
-					vtextures.get(face.textures[2])[1]);
-		glVertex3f(vertices.get(face.vertices[2])[0],
-				vertices.get(face.vertices[2])[1],
-				vertices.get(face.vertices[2])[2]);
-	}
-	
-	private void readln(String line, String objpath) throws IOException {
-		if (line.isEmpty() || line.startsWith("#")) {
-			return;
-		}
-
-		String[] args = line.split(" ");
-
-		if (args[0].equals("v") && args.length == 4) {
-			float[] value = { Float.valueOf(args[1]), Float.valueOf(args[2]),
-					Float.valueOf(args[3]) };
-			vertices.add(value);
-		}
-		if (args[0].equals("vn") && args.length == 4) {
-			float[] value = { Float.valueOf(args[1]), Float.valueOf(args[2]),
-					Float.valueOf(args[3]) };
-			normals.add(value);
-		}
-		if (args[0].equals("vt") && args.length == 3) {
-			float[] value = { Float.valueOf(args[1]), Float.valueOf(args[2]) };
-			vtextures.add(value);
-		}
-		if (args[0].equals("f") && args.length == 4) {
-			int[] v = new int[args.length - 1];
-			int[] vt = new int[args.length - 1];
-			int[] vn = new int[args.length - 1];
-			for (int i = 0; i < vt.length; i++)
-				vt[i] = 0;
-			for (int i = 1; i <= 3; i++) {
-				if (args[i].contains("/")) {
-					if (args[i].contains("//")) {
-						String[] splitted = args[i].split("//");
-						v[i - 1] = Integer.valueOf(splitted[0]);
-						vn[i - 1] = Integer.valueOf(splitted[1]);
-					} else {
-						String[] splitted = args[i].split("/");
-						v[i - 1] = Integer.valueOf(splitted[0]);
-						if (splitted.length >= 2) {
-							vt[i - 1] = Integer.valueOf(splitted[1]);
-						}
-						if (splitted.length == 3) {
-							vn[i - 1] = Integer.valueOf(splitted[2]);
-						}
-					}
-				} else {
-					v[i - 1] = Integer.valueOf(args[i]);
-				}
-			}
-			commands.add(new Face(v, vt, vn));
-		}
-		if (args[0].equals("mtllib") && args.length == 2) {
-			Material.readFile(materials, new File(objpath).toPath().getParent()
-					.toString()
-					+ "/" + args[1]);
-
-		}
-		if (args[0].equals("usemtl") && args.length == 2) {
-			for (Material mat : materials) {
-				if (mat.name.equals(args[1]))
-					commands.add(mat);
-			}
-		}
 	}
 	
 	public static int getDL(String path) throws IOException {
@@ -149,19 +124,54 @@ public class Model implements Renderable {
 	}
 
 	private static class Face implements ModelCommand {
-		public final int[] vertices;
-		public final int[] textures;
-		public final int[] normals;
+		private final float v0, v1, v2, v3, v4, v5, v6, v7, v8;
+		private final float t0, t1, t2, t3, t4, t5;
+		private final float n0, n1, n2, n3, n4, n5, n6, n7, n8;
+		private final boolean texen0, texen1, texen2;
 
-		public Face(int[] vertices, int[] textures, int[] normals) {
-			this.vertices = vertices;
-			this.textures = textures;
-			this.normals = normals;
+		public Face(float[] v, float[] t, float[] n, boolean[] texen) {
+			v0 = v[0];
+			v1 = v[1];
+			v2 = v[2];
+			v3 = v[3];
+			v4 = v[4];
+			v5 = v[5];
+			v6 = v[6];
+			v7 = v[7];
+			v8 = v[8];
+			t0 = t[0];
+			t1 = t[1];
+			t2 = t[2];
+			t3 = t[3];
+			t4 = t[4];
+			t5 = t[5];
+			n0 = n[0];
+			n1 = n[1];
+			n2 = n[2];
+			n3 = n[3];
+			n4 = n[4];
+			n5 = n[5];
+			n6 = n[6];
+			n7 = n[7];
+			n8 = n[8];
+			texen0 = texen[0];
+			texen1 = texen[1];
+			texen2 = texen[2];
 		}
 
 		@Override
 		public void execute(Model commander) {
-			commander.renderFace(this);
+			glNormal3f(n0, n1, n2);
+			if (texen0) glTexCoord2f(t0, t1);
+			glVertex3f(v0, v1, v2);
+			
+			glNormal3f(n3, n4, n5);
+			if (texen1) glTexCoord2f(t2, t3);
+			glVertex3f(v3, v4, v5);
+			
+			glNormal3f(n6, n7, n8);
+			if (texen2) glTexCoord2f(t4, t5);
+			glVertex3f(v6, v7, v8);
 		}
 	}
 
