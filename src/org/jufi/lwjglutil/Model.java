@@ -14,22 +14,21 @@ import java.util.ArrayList;
 
 public class Model implements Renderable {
 	private ModelCommand[] commands;
-	private ArrayList<Material> materials = new ArrayList<Material>();
 
 	public Model(String path) throws IOException {
-		String line;
-
 		ArrayList<ModelCommand> cmds = new ArrayList<ModelCommand>();
-		ArrayList<float[]> vertices = new ArrayList<float[]>();// TODO material direct, optimize dl
+		ArrayList<float[]> vertices = new ArrayList<float[]>();
 		ArrayList<float[]> vtextures = new ArrayList<float[]>();
 		ArrayList<float[]> normals = new ArrayList<float[]>();
+		ArrayList<Material> materials = new ArrayList<Material>();
 
 		vertices.add(new float[] {0, 0, 0});
 		vtextures.add(new float[] {0, 0});
 		normals.add(new float[] {0, 0, 0});
 		
 		BufferedReader res = new BufferedReader(new FileReader(path));
-		
+
+		String line;
 		while ((line = res.readLine()) != null) {
 			if (!line.isEmpty() && !line.startsWith("#")) {
 				String[] args = line.split(" ");
@@ -86,10 +85,27 @@ public class Model implements Renderable {
 					cmds.add(new Face(v, vt, vn, tex));
 				}
 				if (args[0].equals("mtllib") && args.length == 2) {
-					Material.readFile(materials, new File(path).toPath().getParent()
-							.toString()
-							+ "/" + args[1]);
-	
+					String mpath = new File(path).toPath().getParent().toString() + "/" + args[1];
+					BufferedReader mtlfile = new BufferedReader(new FileReader(mpath));
+					String mline;
+					
+					while ((mline = mtlfile.readLine()) != null) {
+						if (!(mline.isEmpty() || mline.startsWith("#"))) {
+							String[] margs = mline.split(" ");
+							
+							if (margs[0].equals("newmtl") && margs.length == 2) materials.add(new Material(margs[1]));
+							else if (margs[0].equals("Ka") && margs.length == 4) materials.get(materials.size() - 1).ka = PBytes.toFloatBuffer(Float.valueOf(margs[1]), Float.valueOf(margs[2]), Float.valueOf(margs[3]), 1);
+							else if (margs[0].equals("Kd") && margs.length == 4) materials.get(materials.size() - 1).kd = PBytes.toFloatBuffer(Float.valueOf(margs[1]), Float.valueOf(margs[2]), Float.valueOf(margs[3]), 1);
+							else if (margs[0].equals("Ks") && margs.length == 4) materials.get(materials.size() - 1).ks = PBytes.toFloatBuffer(Float.valueOf(margs[1]), Float.valueOf(margs[2]), Float.valueOf(margs[3]), 1);
+							else if (margs[0].equals("Ns") && margs.length == 2) materials.get(materials.size() - 1).ns = Float.valueOf(margs[1]);
+							else if ((margs[0].equals("map_Ka") || margs[0].equals("map_Kd")) && margs.length == 2) {
+								int texture = ResourceLoader.loadTexture(new File(mpath).toPath().getParent().toString() + "/" + margs[1]);
+								materials.get(materials.size() - 1).texture = texture;
+							}
+						}
+					}
+					
+					mtlfile.close();
 				}
 				if (args[0].equals("usemtl") && args.length == 2) {
 					for (Material mat : materials) {
@@ -199,29 +215,6 @@ public class Model implements Renderable {
 			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, ns);
 			glBindTexture(GL_TEXTURE_2D, texture);
 			glBegin(GL_TRIANGLES);
-		}
-		
-		public static void readFile(ArrayList<Material> materials, String path) throws IOException {
-			BufferedReader mtlfile = new BufferedReader(new FileReader(path));
-			String line;
-			
-			while ((line = mtlfile.readLine()) != null) {
-				if (!(line.isEmpty() || line.startsWith("#"))) {
-					String[] args = line.split(" ");
-					
-					if (args[0].equals("newmtl") && args.length == 2) materials.add(new Material(args[1]));
-					else if (args[0].equals("Ka") && args.length == 4) materials.get(materials.size() - 1).ka = PBytes.toFloatBuffer(Float.valueOf(args[1]), Float.valueOf(args[2]), Float.valueOf(args[3]), 1);
-					else if (args[0].equals("Kd") && args.length == 4) materials.get(materials.size() - 1).kd = PBytes.toFloatBuffer(Float.valueOf(args[1]), Float.valueOf(args[2]), Float.valueOf(args[3]), 1);
-					else if (args[0].equals("Ks") && args.length == 4) materials.get(materials.size() - 1).ks = PBytes.toFloatBuffer(Float.valueOf(args[1]), Float.valueOf(args[2]), Float.valueOf(args[3]), 1);
-					else if (args[0].equals("Ns") && args.length == 2) materials.get(materials.size() - 1).ns = Float.valueOf(args[1]);
-					else if ((args[0].equals("map_Ka") || args[0].equals("map_Kd")) && args.length == 2) {
-						int texture = ResourceLoader.loadTexture(new File(path).toPath().getParent().toString() + "/" + args[1]);
-						materials.get(materials.size() - 1).texture = texture;
-					}
-				}
-			}
-			
-			mtlfile.close();
 		}
 	}
 
