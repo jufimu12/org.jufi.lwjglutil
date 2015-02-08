@@ -63,7 +63,6 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 			sh_main = new int[3];
 			sh_main[0] = ResourceLoader.loadShader("res/shader/3d.vsh", "res/shader/3d.fsh")[0];
 			sh_main[1] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
-			sh_main[2] = sh_main[1];
 //			sh_main = null;
 
 			dl_bunny = Model.getDL("res/obj/bunny.obj");
@@ -77,9 +76,10 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	@Override
 	 protected void initCameraMode(CameraMode m) {
 		m.setDisplayRes(1600, 900);
-		m.setLightpos(1, 1, 1, 0);
+//		m.setLightpos(-0.7f, 2, 0.3f, 1);// point light
+		m.setLightpos(1, 1, 1, 0);// directional light
 		m.setMap(null);
-		m.setOptions(false, 0, false);
+		m.setOptions(true, 0, false);
 		m.setOrthoRes(1600, 900);
 		m.setPerspective(70, 0.01f, 1000);
 		m.setTitle("Engine");

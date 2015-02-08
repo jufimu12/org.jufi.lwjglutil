@@ -16,11 +16,12 @@ import org.lwjgl.opengl.Display;
 public abstract class Engine extends Thread {
 	
 	protected Camera cam;
-	protected int[] sh_main;// null to disable
+	protected int[] sh_main;// {3d, 3dnl, 2d}, null to disable
 	protected boolean exitmainloop = false;
 	protected boolean printfps = true;
 	private FPSCounter fps = new FPSCounter();
 	private int timetogc = 1000;
+	private int err;
 	
 	public Engine() {
 		
@@ -28,7 +29,6 @@ public abstract class Engine extends Thread {
 	
 	public final void run() {
 		initEverything();
-		int err;
         
 		while (!Display.isCloseRequested() && !(Keyboard.isKeyDown(KEY_Q) && Keyboard.isKeyDown(KEY_LCONTROL))) {// Main loop
 			if (exitmainloop) {
