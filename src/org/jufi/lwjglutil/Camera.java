@@ -75,7 +75,7 @@ public class Camera {
 	public void tick() {
 		glRotatef(-rx, 1, 0, 0);
 		glRotatef(-ry, 0, 1, 0);
-		glRotatef(-rz, 0, 0, 1);
+		if (rz != 0) glRotatef(-rz, 0, 0, 1);
 		glTranslatef(-tx, -ty - playerHeight, -tz);
 		glLight(GL_LIGHT0, GL_POSITION, lightpos);
 	}

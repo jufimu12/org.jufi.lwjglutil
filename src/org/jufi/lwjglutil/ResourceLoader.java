@@ -137,6 +137,11 @@ public class ResourceLoader {
 		
 		return new int[] {shaderProgram, vertexShader, fragmentShader};
 	}
+	public static void loadDefaultShader(int[] sh_main) throws IOException {
+		sh_main[0] = ResourceLoader.loadShader("res/shader/3d.vsh", "res/shader/3d.fsh")[0];
+		sh_main[1] = ResourceLoader.loadShader("res/shader/3dnl.vsh", "res/shader/3dnl.fsh")[0];
+		sh_main[2] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
+	}
 	
 	
 	
@@ -179,7 +184,7 @@ public class ResourceLoader {
 		
 		new File(System.getProperty("java.io.tmpdir") + "/lwjglnatives").mkdir();
 		for (String s : natives) {
-			FileUtils.copyJARRes(source + s, dest + s, executingClass);
+			if (!new File(dest + s).exists()) FileUtils.copyJARRes(source + s, dest + s, executingClass);
 		}
 		System.setProperty("org.lwjgl.librarypath", System.getProperty("java.io.tmpdir") + "/lwjglnatives");
 	}

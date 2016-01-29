@@ -60,9 +60,7 @@ public class Engine extends org.jufi.lwjglutil.Engine {
 	@Override
 	protected void postInit() {
 		try {
-			sh_main = new int[3];
-			sh_main[0] = ResourceLoader.loadShader("res/shader/3d.vsh", "res/shader/3d.fsh")[0];
-			sh_main[1] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
+			ResourceLoader.loadDefaultShader(sh_main = new int[3]);
 //			sh_main = null;
 
 			dl_bunny = Model.getDL("res/obj/bunny.obj");
