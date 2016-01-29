@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
@@ -23,13 +24,17 @@ import org.lwjgl.util.WaveData;
 public class ResourceLoader {
 	public static int white;// Texture
 	
+	public static int loadTexturei(String path) throws IOException {
+		return genTexture(ImageIO.read(ResourceLoader.class.getResourceAsStream(path)));
+	}
 	public static int loadTexture(String path) throws IOException {
-		return loadTexture(new File(path));
+		return genTexture(ImageIO.read(new File(path)));
 	}
 	public static int loadTexture(File res) throws IOException {
+		return genTexture(ImageIO.read(res));
+	}
+	private static int genTexture(BufferedImage image) {
 		int texId = glGenTextures();
-		
-		BufferedImage image = ImageIO.read(res);
 		
 		glBindTexture(GL_TEXTURE_2D, texId);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -40,6 +45,9 @@ public class ResourceLoader {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
 		return texId;
+	}
+	public static ByteBuffer loadTextureIntoByteBufferi(String path) throws IOException {
+		return loadTextureIntoByteBuffer(ImageIO.read(ResourceLoader.class.getResourceAsStream(path)));
 	}
 	public static ByteBuffer loadTextureIntoByteBuffer(String path) throws IOException {
 		return loadTextureIntoByteBuffer(new File(path));
@@ -85,8 +93,41 @@ public class ResourceLoader {
 		white = texId;
 	}
 	
-	
-	
+
+	public static int[] loadShaderi(String vertexShaderPath, String fragmentShaderPath) throws IOException {// Shader
+		int shaderProgram = glCreateProgram();
+		int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		
+		StringBuilder vertexShaderSource = new StringBuilder();
+		StringBuilder fragmentShaderSource = new StringBuilder();
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(ResourceLoader.class.getResourceAsStream(vertexShaderPath)));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				vertexShaderSource.append(line).append('\n');
+			}
+			reader.close();
+		}
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(ResourceLoader.class.getResourceAsStream(fragmentShaderPath)));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				fragmentShaderSource.append(line).append('\n');
+			}
+			reader.close();
+		}
+		glShaderSource(vertexShader,  vertexShaderSource);
+		glCompileShader(vertexShader);
+		glShaderSource(fragmentShader, fragmentShaderSource);
+		glCompileShader(fragmentShader);
+		glAttachShader(shaderProgram, vertexShader);
+		glAttachShader(shaderProgram, fragmentShader);
+		glLinkProgram(shaderProgram);
+		glValidateProgram(shaderProgram);
+		
+		return new int[] {shaderProgram, vertexShader, fragmentShader};
+	}
 	public static int[] loadShader(String vertexShaderPath, String fragmentShaderPath) throws IOException {// Shader
 		int shaderProgram = glCreateProgram();
 		int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -138,14 +179,26 @@ public class ResourceLoader {
 		return new int[] {shaderProgram, vertexShader, fragmentShader};
 	}
 	public static void loadDefaultShader(int[] sh_main) throws IOException {
-		sh_main[0] = ResourceLoader.loadShader("res/shader/3d.vsh", "res/shader/3d.fsh")[0];
-		sh_main[1] = ResourceLoader.loadShader("res/shader/3dnl.vsh", "res/shader/3dnl.fsh")[0];
-		sh_main[2] = ResourceLoader.loadShader("res/shader/2d.vsh", "res/shader/2d.fsh")[0];
+		sh_main[0] = ResourceLoader.loadShaderi("/org/jufi/lwjglutil/shader/3d.vsh", "/org/jufi/lwjglutil/shader/3d.fsh")[0];
+		sh_main[1] = ResourceLoader.loadShaderi("/org/jufi/lwjglutil/shader/3dnl.vsh", "/org/jufi/lwjglutil/shader/3dnl.fsh")[0];
+		sh_main[2] = ResourceLoader.loadShaderi("/org/jufi/lwjglutil/shader/2d.vsh", "/org/jufi/lwjglutil/shader/2d.fsh")[0];
 	}
 	
 	
 	
-	public static int getSourceFromWav(String path, float volume) throws FileNotFoundException {// Sound
+	public static int getSourceFromWavi(String path, float volume) {// Sound
+		WaveData data = WaveData.create(new BufferedInputStream(ResourceLoader.class.getResourceAsStream(path)));
+		int buffer = alGenBuffers();
+		alBufferData(buffer, data.format, data.data, data.samplerate);
+		data.dispose();
+		
+		int source = alGenSources();
+		alSourcei(source, AL_BUFFER, buffer);
+		alSourcef(source, AL_GAIN, volume);
+		alDeleteBuffers(buffer);
+		return source;
+	}
+	public static int getSourceFromWav(String path, float volume) throws FileNotFoundException {
 		WaveData data = WaveData.create(new BufferedInputStream(new FileInputStream(path)));
 		int buffer = alGenBuffers();
 		alBufferData(buffer, data.format, data.data, data.samplerate);

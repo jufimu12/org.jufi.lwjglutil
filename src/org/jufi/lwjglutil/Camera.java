@@ -179,8 +179,8 @@ public class Camera {
 		Display.setVSyncEnabled(true);
 		
 		ByteBuffer[] icon = new ByteBuffer[2];
-		icon[0] = ResourceLoader.loadTextureIntoByteBuffer(System.getProperty("user.dir") + "/res/img/icon16.png");
-		icon[1] = ResourceLoader.loadTextureIntoByteBuffer(System.getProperty("user.dir") + "/res/img/icon32.png");
+		icon[0] = ResourceLoader.loadTextureIntoByteBufferi("/org/jufi/lwjglutil/icons/icon16.png");
+		icon[1] = ResourceLoader.loadTextureIntoByteBufferi("/org/jufi/lwjglutil/icons/icon32.png");
 		Display.setIcon(icon);
 		
 		try {

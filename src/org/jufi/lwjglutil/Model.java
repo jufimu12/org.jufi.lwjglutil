@@ -9,13 +9,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public class Model implements Renderable {
 	private ModelCommand[] commands;
-
+	
 	public Model(String path) throws IOException {
+		this(path, false);
+	}
+	
+	public Model(String path, boolean internal) throws IOException {
 		ArrayList<ModelCommand> cmds = new ArrayList<ModelCommand>();
 		ArrayList<float[]> vertices = new ArrayList<float[]>();
 		ArrayList<float[]> vtextures = new ArrayList<float[]>();
@@ -26,7 +31,9 @@ public class Model implements Renderable {
 		vtextures.add(new float[] {0, 0});
 		normals.add(new float[] {0, 0, 0});
 		
-		BufferedReader res = new BufferedReader(new FileReader(path));
+		BufferedReader res;
+		if (internal) res = new BufferedReader(new InputStreamReader(Model.class.getResourceAsStream(path)));
+		else res = new BufferedReader(new FileReader(path));
 
 		String line;
 		while ((line = res.readLine()) != null) {
@@ -85,8 +92,23 @@ public class Model implements Renderable {
 					cmds.add(new Face(v, vt, vn, tex));
 				}
 				if (args[0].equals("mtllib") && args.length == 2) {
-					String mpath = new File(path).toPath().getParent().toString() + "/" + args[1];
-					BufferedReader mtlfile = new BufferedReader(new FileReader(mpath));
+					BufferedReader mtlfile;
+					String mpath;
+					if (internal) {
+						int lastslash = -1;
+						for (int i = path.length() - 1; i >= 0; i--) {
+							if (path.charAt(i) == '/') {
+								lastslash = i;
+								break;
+							}
+						}
+						mpath = path.substring(0, lastslash + 1);
+						mtlfile = new BufferedReader(new InputStreamReader(Model.class.getResourceAsStream(mpath + args[1])));
+					}
+					else {
+						mpath = new File(path).toPath().getParent().toString() + "/";
+						mtlfile = new BufferedReader(new FileReader(mpath + args[1]));
+					}
 					String mline;
 					
 					while ((mline = mtlfile.readLine()) != null) {
@@ -99,7 +121,7 @@ public class Model implements Renderable {
 							else if (margs[0].equals("Ks") && margs.length == 4) materials.get(materials.size() - 1).ks = PBytes.toFloatBuffer(Float.valueOf(margs[1]), Float.valueOf(margs[2]), Float.valueOf(margs[3]), 1);
 							else if (margs[0].equals("Ns") && margs.length == 2) materials.get(materials.size() - 1).ns = Float.valueOf(margs[1]);
 							else if ((margs[0].equals("map_Ka") || margs[0].equals("map_Kd")) && margs.length == 2) {
-								int texture = ResourceLoader.loadTexture(new File(mpath).toPath().getParent().toString() + "/" + margs[1]);
+								int texture = ResourceLoader.loadTexture(mpath + margs[1]);
 								materials.get(materials.size() - 1).texture = texture;
 							}
 						}
@@ -135,6 +157,14 @@ public class Model implements Renderable {
 		int callist = glGenLists(1);
 		glNewList(callist, GL_COMPILE);
 		new Model(path).render();
+		glEndList();
+		return callist;
+	}
+	
+	public static int getDLi(String path) throws IOException {
+		int callist = glGenLists(1);
+		glNewList(callist, GL_COMPILE);
+		new Model(path, true).render();
 		glEndList();
 		return callist;
 	}
